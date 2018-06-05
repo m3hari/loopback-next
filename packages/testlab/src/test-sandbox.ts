@@ -13,11 +13,6 @@ import {
   pathExists,
   appendFile,
 } from 'fs-extra';
-import {Glob} from 'glob';
-import {promisify} from 'util';
-const decache = require('decache');
-
-const globAsync = promisify(Glob);
 
 /**
  * TestSandbox class provides a convenient way to get a reference to a
