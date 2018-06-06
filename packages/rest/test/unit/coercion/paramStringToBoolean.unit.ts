@@ -3,14 +3,13 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {runTests} from './utils';
+import {test} from './utils';
+
+const BOOLEAN_SCHEMA = {type: 'boolean'};
 
 describe('coerce param from string to boolean', () => {
   /*tslint:disable:max-line-length*/
-  const testCases = [
-    ['false', {type: 'boolean'}, 'false', false, new Error().stack],
-    ['true', {type: 'boolean'}, 'true', true, new Error().stack],
-  ];
-
-  runTests(testCases);
+  test(['false', BOOLEAN_SCHEMA, 'false', false]);
+  test(['true', BOOLEAN_SCHEMA, 'true', true]);
+  test(['undefined', BOOLEAN_SCHEMA, undefined, undefined]);
 });

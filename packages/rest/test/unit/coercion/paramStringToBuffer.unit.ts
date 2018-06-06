@@ -3,16 +3,19 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {runTests} from './utils';
+import {test} from './utils';
+
+const BUFFER_SCHEMA = {type: 'string', format: 'byte'};
 
 describe('coerce param from string to buffer', () => {
   const testValues = {
-    base64: Buffer.from('Hello World').toString('base64')
-  }
+    base64: Buffer.from('Hello World').toString('base64'),
+  };
   /*tslint:disable:max-line-length*/
-  const testCases = [
-    ['base64', {type: 'string', format: 'byte'}, testValues.base64, Buffer.from(testValues.base64, 'base64'), new Error().stack],
-  ];
-
-  runTests(testCases);
+  test([
+    'base64',
+    BUFFER_SCHEMA,
+    testValues.base64,
+    Buffer.from(testValues.base64, 'base64'),
+  ]);
 });

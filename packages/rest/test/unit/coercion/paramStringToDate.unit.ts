@@ -3,13 +3,11 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {runTests} from './utils';
+import {test} from './utils';
+
+const DATE_SCHEMA = {type: 'string', format: 'date'};
 
 describe('coerce param from string to date', () => {
   /*tslint:disable:max-line-length*/
-  const testCases = [
-    ['date', {type: 'string', format: 'date'}, '2015-03-01', new Date('2015-03-01'), new Error().stack],
-  ];
-
-  runTests(testCases);
+  test(['date', DATE_SCHEMA, '2015-03-01', new Date('2015-03-01')]);
 });

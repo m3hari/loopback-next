@@ -8,6 +8,7 @@ import {
   ReferenceObject,
   isReferenceObject,
 } from '@loopback/openapi-v3-types';
+import {Validator} from './validator';
 import * as HttpErrors from 'http-errors';
 import * as debugModule from 'debug';
 
@@ -35,8 +36,8 @@ export function coerceParameter(
   let coercedResult;
   coercedResult = data;
   const OAIType = getOAIPrimitiveType(schema.type, schema.format);
+  const validator = new Validator({schema});
 
-  // Review Note: [Validation place 1] Validation rules can be applied for each case
   switch (OAIType) {
     case 'byte':
       coercedResult = Buffer.from(data, 'base64');
@@ -49,6 +50,10 @@ export function coerceParameter(
       coercedResult = parseFloat(data);
       break;
     case 'number':
+      validator.validateParamBeforeCoercion('number', data);
+      coercedResult = data ? Number(data) : undefined;
+      validator.validateParamAfterCoercion('number', coercedResult);
+      break;
     case 'long':
       coercedResult = Number(data);
       break;
@@ -56,7 +61,7 @@ export function coerceParameter(
       coercedResult = parseInt(data);
       break;
     case 'boolean':
-      coercedResult = isTrue(data) ? true : false;
+      coercedResult = isTrue(data) ? true : isFalse(data) ? false : undefined;
     case 'string':
     case 'password':
     // serialize will be supported in next PR
@@ -74,16 +79,24 @@ export function coerceParameter(
 }
 
 /**
- * A set of truthy values. A data in this set will be coerced to `true`,
- * otherwise coerced to `false`.
+ * A set of truthy values. A data in this set will be coerced to `true`.
  *
  * @param data The raw data get from http request
  * @returns The corresponding coerced boolean type
  */
-
 function isTrue(data: string): boolean {
-  const isTrueSet = ['true', '1', true, 1];
+  const isTrueSet = ['true', '1'];
   return isTrueSet.includes(data);
+}
+
+/**
+ * A set of falsy values. A data in this set will be coerced to `false`.
+ * @param data The raw data get from http request
+ * @returns The corresponding coerced boolean type
+ */
+function isFalse(data: string): boolean {
+  const isFalseSet = ['false', '0'];
+  return isFalseSet.includes(data);
 }
 
 /**
@@ -92,9 +105,7 @@ function isTrue(data: string): boolean {
  * @param type The type in an OpenAPI schema specification
  * @param format The format in an OpenAPI schema specification
  */
-
 function getOAIPrimitiveType(type?: string, format?: string) {
-  // Review Note: [Validation place 2] Validation rules can be applied for each case
   let OAIType: string = 'unknownType';
   // serizlize will be supported in next PR
   if (type === 'object' || type === 'array') OAIType = 'serialize';

@@ -18,6 +18,7 @@ import {
   parseOperationArgs,
   ResolvedRoute,
 } from '../../..';
+import * as HttpErrors from 'http-errors';
 
 export function givenOperationWithParameters(params?: ParameterObject[]) {
   return <OperationObject>{
@@ -37,6 +38,7 @@ export interface TestArgs<T> {
   schema?: SchemaObject;
   specConfig?: Partial<ParameterObject>;
   caller: string;
+  expectError: boolean;
 }
 
 export function givenResolvedRoute(
@@ -58,23 +60,36 @@ export async function testCoercion<T>(config: TestArgs<T>) {
       },
     ]);
     const route = givenResolvedRoute(spec, {aparameter: config.valueFromReq});
-    const args = await parseOperationArgs(req, route);
-    expect(args).to.eql([config.expectedResult]);
+
+    if (config.expectError) {
+      try {
+        await parseOperationArgs(req, route);
+        throw new Error("'parseOperationArgs' should throw error!");
+      } catch (err) {
+        expect(err).to.eql(config.expectedResult);
+      }
+    } else {
+      const args = await parseOperationArgs(req, route);
+      expect(args).to.eql([config.expectedResult]);
+    }
   } catch (err) {
-    throw new Error(`${err} \n Failed ${config.caller.split(/\n/)[1]}`);
+    err.stack += config.caller;
+    throw err;
   }
 }
 
 // tslint:disable-next-line:no-any
-export function runTests(tests: any[][]) {
-  for (let t of tests) {
-    it(t[0] as string, async () => {
-      await testCoercion({
-        schema: t[1] as SchemaObject,
-        valueFromReq: t[2] as string,
-        expectedResult: t[3],
-        caller: t[4] as string,
-      });
+export function test(t: any[]) {
+  const caller: string = new Error().stack!;
+  it(t[0] as string, async () => {
+    await testCoercion({
+      schema: t[1] as SchemaObject,
+      valueFromReq: t[2] as string,
+      expectedResult: t[3],
+      caller,
+      expectError: t.length > 4 ? t[4] : false,
     });
-  }
+  });
 }
+
+export const ERROR_BAD_REQUEST = new HttpErrors['400']();
