@@ -4,10 +4,14 @@
 // License text available at https://opensource.org/licenses/MIT
 
 import {test} from './utils';
+import {ParameterLocation} from '@loopback/openapi-v3-types';
 
-const DATE_SCHEMA = {type: 'string', format: 'date'};
+const DATE_PARAM = {
+  in: <ParameterLocation>'path',
+  name: 'aparameter',
+  schema: {type: 'string', format: 'date'},
+};
 
 describe('coerce param from string to date', () => {
-  /*tslint:disable:max-line-length*/
-  test(['date', DATE_SCHEMA, '2015-03-01', new Date('2015-03-01')]);
+  test<Date>(DATE_PARAM, '2015-03-01', new Date('2015-03-01'));
 });

@@ -3,13 +3,8 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {
-  SchemaObject,
-  ReferenceObject,
-  isReferenceObject,
-} from '@loopback/openapi-v3-types';
+import {ParameterObject, isReferenceObject} from '@loopback/openapi-v3-types';
 import {Validator} from './validator';
-import * as HttpErrors from 'http-errors';
 import * as debugModule from 'debug';
 
 const debug = debugModule('loopback:rest:coercion');
@@ -21,10 +16,8 @@ const debug = debugModule('loopback:rest:coercion');
  * @param data The raw data get from http request
  * @param schema The parameter's schema defined in OpenAPI specification
  */
-export function coerceParameter(
-  data: string,
-  schema?: SchemaObject | ReferenceObject,
-) {
+export function coerceParameter(data: string, spec: ParameterObject) {
+  const schema = spec.schema;
   if (!schema || isReferenceObject(schema)) {
     debug(
       'The parameter with schema %s is not coerced since schema' +
@@ -36,7 +29,9 @@ export function coerceParameter(
   let coercedResult;
   coercedResult = data;
   const OAIType = getOAIPrimitiveType(schema.type, schema.format);
-  const validator = new Validator({schema});
+  const validator = new Validator({parameterSpec: spec});
+
+  validator.validateParamBeforeCoercion(data);
 
   switch (OAIType) {
     case 'byte':
@@ -50,7 +45,6 @@ export function coerceParameter(
       coercedResult = parseFloat(data);
       break;
     case 'number':
-      validator.validateParamBeforeCoercion('number', data);
       coercedResult = data ? Number(data) : undefined;
       validator.validateParamAfterCoercion('number', coercedResult);
       break;
@@ -62,18 +56,14 @@ export function coerceParameter(
       break;
     case 'boolean':
       coercedResult = isTrue(data) ? true : isFalse(data) ? false : undefined;
+      break;
     case 'string':
     case 'password':
     // serialize will be supported in next PR
     case 'serialize':
       break;
-    case 'unknownType':
     default:
-      throw new HttpErrors.NotImplemented(
-        `Type ${schema.type} with format ${
-          schema.format
-        } is not a valid OpenAPI schema`,
-      );
+      break;
   }
   return coercedResult;
 }
@@ -85,8 +75,7 @@ export function coerceParameter(
  * @returns The corresponding coerced boolean type
  */
 function isTrue(data: string): boolean {
-  const isTrueSet = ['true', '1'];
-  return isTrueSet.includes(data);
+  return ['true', '1'].includes(data);
 }
 
 /**
@@ -95,8 +84,7 @@ function isTrue(data: string): boolean {
  * @returns The corresponding coerced boolean type
  */
 function isFalse(data: string): boolean {
-  const isFalseSet = ['false', '0'];
-  return isFalseSet.includes(data);
+  return ['false', '0'].includes(data);
 }
 
 /**
@@ -106,35 +94,30 @@ function isFalse(data: string): boolean {
  * @param format The format in an OpenAPI schema specification
  */
 function getOAIPrimitiveType(type?: string, format?: string) {
-  let OAIType: string = 'unknownType';
   // serizlize will be supported in next PR
-  if (type === 'object' || type === 'array') OAIType = 'serialize';
+  if (type === 'object' || type === 'array') return 'serialize';
   if (type === 'string') {
     switch (format) {
       case 'byte':
-        OAIType = 'byte';
-        break;
+        return 'byte';
       case 'binary':
-        OAIType = 'binary';
-        break;
+        return 'binary';
       case 'date':
-        OAIType = 'date';
-        break;
+        return 'date';
       case 'date-time':
-        OAIType = 'date-time';
-        break;
+        return 'date-time';
       case 'password':
-        OAIType = 'password';
-        break;
+        return 'password';
       default:
-        OAIType = 'string';
-        break;
+        return 'string';
     }
   }
-  if (type === 'boolean') OAIType = 'boolean';
+  if (type === 'boolean') return 'boolean';
   if (type === 'number')
-    OAIType =
-      format === 'float' ? 'float' : format === 'double' ? 'double' : 'number';
-  if (type === 'integer') OAIType = format === 'int64' ? 'long' : 'integer';
-  return OAIType;
+    return format === 'float'
+      ? 'float'
+      : format === 'double'
+        ? 'double'
+        : 'number';
+  if (type === 'integer') return format === 'int64' ? 'long' : 'integer';
 }

@@ -4,18 +4,22 @@
 // License text available at https://opensource.org/licenses/MIT
 
 import {test} from './utils';
+import {ParameterLocation} from '@loopback/openapi-v3-types';
 
-const BUFFER_SCHEMA = {type: 'string', format: 'byte'};
+const BUFFER_PARAM = {
+  in: <ParameterLocation>'path',
+  name: 'aparameter',
+  schema: {type: 'string', format: 'byte'},
+};
 
 describe('coerce param from string to buffer', () => {
   const testValues = {
     base64: Buffer.from('Hello World').toString('base64'),
   };
-  /*tslint:disable:max-line-length*/
-  test([
-    'base64',
-    BUFFER_SCHEMA,
+
+  test<Buffer>(
+    BUFFER_PARAM,
     testValues.base64,
     Buffer.from(testValues.base64, 'base64'),
-  ]);
+  );
 });

@@ -1,14 +1,8 @@
-import {
-  supertest,
-  createClientForHandler,
-  sinon,
-  SinonSpy,
-} from '@loopback/testlab';
-import {RestApplication, RestServer, get, param} from '../../..';
+import {supertest, createClientForHandler, sinon} from '@loopback/testlab';
+import {RestApplication, get, param} from '../../..';
 
 describe('Coercion', () => {
   let app: RestApplication;
-  let server: RestServer;
   let client: supertest.SuperTest<supertest.Test>;
 
   before(givenAClient);

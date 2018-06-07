@@ -4,13 +4,21 @@
 // License text available at https://opensource.org/licenses/MIT
 
 import {test} from './utils';
+import {ParameterLocation} from '@loopback/openapi-v3-types';
 
-const INT32_SCHEMA = {type: 'integer', format: 'int32'};
-const INT64_SCHEMA = {type: 'integer', format: 'int64'};
-// const INT_SCHEMA = {type: 'integer'}; will be used for future edge cases
+const INT32_PARAM = {
+  in: <ParameterLocation>'path',
+  name: 'aparameter',
+  schema: {type: 'number', format: 'int32'},
+};
+
+const INT64_PARAM = {
+  in: <ParameterLocation>'path',
+  name: 'aparameter',
+  schema: {type: 'number', format: 'int64'},
+};
 
 describe('coerce param from string to integer', () => {
-  /*tslint:disable:max-line-length*/
-  test(['integer', INT32_SCHEMA, '100', 100]);
-  test(['long', INT64_SCHEMA, '9223372036854775807', 9223372036854775807]);
+  test<number>(INT32_PARAM, '100', 100);
+  test<number>(INT64_PARAM, '9223372036854775807', 9223372036854775807);
 });

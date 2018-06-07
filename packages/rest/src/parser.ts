@@ -103,7 +103,7 @@ function buildOperationArguments(
     }
     const spec = paramSpec as ParameterObject;
     const rawValue = getParamFromRequest(spec, request, pathParams);
-    const coercedValue = coerceParameter(rawValue, spec.schema);
+    const coercedValue = coerceParameter(rawValue, spec);
     paramArgs.push(coercedValue);
   }
   if (requestBodyIndex > -1) paramArgs.splice(requestBodyIndex, 0, body);

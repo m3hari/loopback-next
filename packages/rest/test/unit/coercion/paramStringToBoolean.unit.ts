@@ -4,12 +4,16 @@
 // License text available at https://opensource.org/licenses/MIT
 
 import {test} from './utils';
+import {ParameterLocation} from '@loopback/openapi-v3-types';
 
-const BOOLEAN_SCHEMA = {type: 'boolean'};
+const BOOLEAN_PARAM = {
+  in: <ParameterLocation>'path',
+  name: 'aparameter',
+  schema: {type: 'boolean'},
+};
 
 describe('coerce param from string to boolean', () => {
-  /*tslint:disable:max-line-length*/
-  test(['false', BOOLEAN_SCHEMA, 'false', false]);
-  test(['true', BOOLEAN_SCHEMA, 'true', true]);
-  test(['undefined', BOOLEAN_SCHEMA, undefined, undefined]);
+  test<boolean>(BOOLEAN_PARAM, 'false', false);
+  test<boolean>(BOOLEAN_PARAM, 'true', true);
+  test<undefined>(BOOLEAN_PARAM, undefined, undefined);
 });

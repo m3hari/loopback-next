@@ -3,15 +3,8 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {
-  SchemaObject,
-  ReferenceObject,
-  isReferenceObject,
-} from '@loopback/openapi-v3-types';
+import {ParameterObject} from '@loopback/openapi-v3-types';
 import * as HttpErrors from 'http-errors';
-import * as debugModule from 'debug';
-
-const debug = debugModule('loopback:rest:coercion');
 
 /**
  * A set of options to pass into the validator functions
@@ -24,7 +17,7 @@ export type ValidationOptions = {
  * The context information that a validator needs
  */
 export type ValidationContext = {
-  schema?: SchemaObject;
+  parameterSpec?: ParameterObject;
 };
 
 /**
@@ -43,8 +36,7 @@ export class Validator {
    * @param opts options
    */
   validateParamBeforeCoercion(
-    type: string,
-    value: any,
+    value: string | object | undefined,
     opts?: ValidationOptions,
   ) {
     if (this.isAbsent(value)) {
@@ -62,7 +54,8 @@ export class Validator {
    * @param opts
    */
   isRequired(opts?: ValidationOptions) {
-    if (this.ctx && this.ctx.schema && this.ctx.schema.required) return true;
+    if (this.ctx && this.ctx.parameterSpec && this.ctx.parameterSpec.required)
+      return true;
     if (opts && opts.required) return true;
     return false;
   }
@@ -78,6 +71,7 @@ export class Validator {
 
   validateParamAfterCoercion(
     type: string,
+    // tslint:disable-next-line:no-any
     value: any,
     opts?: ValidationOptions,
   ) {
@@ -96,9 +90,9 @@ export class Validator {
    *
    * @param value
    */
+  // tslint:disable-next-line:no-any
   isAbsent(value: any) {
-    const isEmptySet = [''];
-    return isEmptySet.includes(value);
+    return [''].includes(value);
   }
 
   /**
@@ -106,6 +100,7 @@ export class Validator {
    *
    * @param value the coerced value of a number type parameter.
    */
+  // tslint:disable-next-line:no-any
   validateNumber(value: any) {
     if (value === undefined) return;
     if (isNaN(value)) throw new HttpErrors['400']();
