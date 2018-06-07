@@ -16,8 +16,6 @@ import {
 } from '../../..';
 import * as HttpErrors from 'http-errors';
 
-export const ERROR_BAD_REQUEST = new HttpErrors['400']();
-
 function givenOperationWithParameters(params?: ParameterObject[]) {
   return <OperationObject>{
     'x-operation-name': 'testOp',
@@ -39,16 +37,16 @@ function givenResolvedRoute(
 }
 
 export interface TestArgs<T> {
-  expectedResult: T;
-  rawValue: string | undefined | object;
   paramSpec: ParameterObject;
+  rawValue: string | undefined | object;
+  expectedResult: T;
   caller: string;
   expectError: boolean;
+  opts: TestOptions;
 }
 
 export type TestOptions = {
   testName?: string;
-  expectError?: boolean;
 };
 
 export async function testCoercion<T>(config: TestArgs<T>) {
@@ -91,6 +89,7 @@ export function test<T>(
       expectedResult,
       caller,
       expectError: expectedResult instanceof HttpErrors.HttpError,
+      opts: opts || {},
     });
   });
 }

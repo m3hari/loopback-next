@@ -7,6 +7,7 @@ import {ParameterObject, isReferenceObject} from '@loopback/openapi-v3-types';
 import {Validator} from './validator';
 import * as debugModule from 'debug';
 import {HttpErrors} from '..';
+import {HttpErrorMessage} from '../';
 
 const debug = debugModule('loopback:rest:coercion');
 
@@ -48,7 +49,10 @@ export function coerceParameter(data: string, spec: ParameterObject) {
     case 'number':
       coercedResult = data ? Number(data) : undefined;
       if (coercedResult === undefined) break;
-      if (isNaN(coercedResult)) throw new HttpErrors['400']();
+      if (isNaN(coercedResult))
+        throw new HttpErrors['400'](
+          HttpErrorMessage.INVALID_DATA(data, spec.name),
+        );
       break;
     case 'long':
       coercedResult = Number(data);

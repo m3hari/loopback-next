@@ -5,6 +5,7 @@
 
 import {ParameterObject} from '@loopback/openapi-v3-types';
 import * as HttpErrors from 'http-errors';
+import {HttpErrorMessage} from '../';
 
 /**
  * A set of options to pass into the validator functions
@@ -17,7 +18,7 @@ export type ValidationOptions = {
  * The context information that a validator needs
  */
 export type ValidationContext = {
-  parameterSpec?: ParameterObject;
+  parameterSpec: ParameterObject;
 };
 
 /**
@@ -41,7 +42,8 @@ export class Validator {
   ) {
     if (this.isAbsent(value)) {
       if (this.isRequired(opts)) {
-        throw new HttpErrors['400']();
+        const name = this.ctx.parameterSpec.name;
+        throw new HttpErrors['400'](HttpErrorMessage.MISSING_REQUIRED(name));
       } else {
         return;
       }
@@ -54,8 +56,7 @@ export class Validator {
    * @param opts
    */
   isRequired(opts?: ValidationOptions) {
-    if (this.ctx && this.ctx.parameterSpec && this.ctx.parameterSpec.required)
-      return true;
+    if (this.ctx.parameterSpec.required) return true;
     if (opts && opts.required) return true;
     return false;
   }

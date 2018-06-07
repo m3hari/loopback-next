@@ -3,9 +3,10 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {test, ERROR_BAD_REQUEST} from './utils';
+import {test} from './utils';
 import {ParameterLocation} from '@loopback/openapi-v3-types';
 import * as HttpErrors from 'http-errors';
+import {HttpErrorMessage} from './../../../';
 
 const NUMBER_PARAM = {
   in: <ParameterLocation>'path',
@@ -48,7 +49,14 @@ describe('coerce param from string to number - required', () => {
 
   context('empty values trigger ERROR_BAD_REQUEST', () => {
     // null, '' sent from request are converted to raw value ''
-    test<HttpErrors.HttpError>(REQUIRED_NUMBER_PARAM, '', ERROR_BAD_REQUEST);
+    const errorMsg = HttpErrorMessage.MISSING_REQUIRED(
+      REQUIRED_NUMBER_PARAM.name,
+    );
+    test<HttpErrors.HttpError>(
+      REQUIRED_NUMBER_PARAM,
+      '',
+      new HttpErrors['400'](errorMsg),
+    );
   });
 });
 
@@ -77,30 +85,25 @@ describe('coerce param from string to number - optional', () => {
   });
 
   context('All other non-number values trigger ERROR_BAD_REQUEST', () => {
+    let errorMsg = HttpErrorMessage.INVALID_DATA('text', NUMBER_PARAM.name);
     // 'false', false, 'true', true, 'text' sent from request are convert to a string
-    test<HttpErrors.HttpError>(NUMBER_PARAM, 'text', ERROR_BAD_REQUEST);
+    test<HttpErrors.HttpError>(
+      NUMBER_PARAM,
+      'text',
+      new HttpErrors['400'](errorMsg),
+    );
+
+    errorMsg = HttpErrorMessage.INVALID_DATA({a: true}, NUMBER_PARAM.name);
     // {a: true}, [1,2] are convert to object
-    test<HttpErrors.HttpError>(NUMBER_PARAM, {a: true}, ERROR_BAD_REQUEST);
+    test<HttpErrors.HttpError>(
+      NUMBER_PARAM,
+      {a: true},
+      new HttpErrors['400'](errorMsg),
+    );
   });
 });
 
 describe('OAI3 primitive types', () => {
   test<number>(FLOAT_PARAM, '3.333333', 3.333333);
   test<number>(DOUBLE_PARAM, '3.3333333333', 3.3333333333);
-});
-
-// Review notes: just add them for the purpose of review,
-// will remove it when merge code
-context('Number-like string values trigger ERROR_BAD_REQUEST', () => {
-  // Copied from strong-remoting
-  // these have to be in serialization acceptance tests
-  // [{arg: '0'}, ERROR_BAD_REQUEST],
-  // [{arg: '1'}, ERROR_BAD_REQUEST],
-  // [{arg: '-1'}, ERROR_BAD_REQUEST],
-  // [{arg: '1.2'}, ERROR_BAD_REQUEST],
-  // [{arg: '-1.2'}, ERROR_BAD_REQUEST],
-  // [{arg: '2343546576878989879789'}, ERROR_BAD_REQUEST],
-  // [{arg: '-2343546576878989879789'}, ERROR_BAD_REQUEST],
-  // [{arg: '1.234e+30'}, ERROR_BAD_REQUEST],
-  // [{arg: '-1.234e+30'}, ERROR_BAD_REQUEST],
 });
