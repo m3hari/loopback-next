@@ -61,31 +61,6 @@ export class Validator {
   }
 
   /**
-   * The validation executed after type coercion. Like
-   * checking invalid values.
-   *
-   * @param type A parameter's type.
-   * @param value A parameter's raw value from http request.
-   * @param opts options.
-   */
-
-  validateParamAfterCoercion(
-    type: string,
-    // tslint:disable-next-line:no-any
-    value: any,
-    opts?: ValidationOptions,
-  ) {
-    switch (type) {
-      case 'number':
-        this.validateNumber(value);
-        break;
-      //@jannyhou: other types TBD
-      default:
-        return;
-    }
-  }
-
-  /**
    * Return `true` if the value is empty, return `false` otherwise.
    *
    * @param value
@@ -93,16 +68,5 @@ export class Validator {
   // tslint:disable-next-line:no-any
   isAbsent(value: any) {
     return [''].includes(value);
-  }
-
-  /**
-   * Validate the coerced value for a number type parameter.
-   *
-   * @param value the coerced value of a number type parameter.
-   */
-  // tslint:disable-next-line:no-any
-  validateNumber(value: any) {
-    if (value === undefined) return;
-    if (isNaN(value)) throw new HttpErrors['400']();
   }
 }

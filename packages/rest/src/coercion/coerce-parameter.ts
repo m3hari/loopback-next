@@ -6,6 +6,7 @@
 import {ParameterObject, isReferenceObject} from '@loopback/openapi-v3-types';
 import {Validator} from './validator';
 import * as debugModule from 'debug';
+import {HttpErrors} from '..';
 
 const debug = debugModule('loopback:rest:coercion');
 
@@ -46,7 +47,8 @@ export function coerceParameter(data: string, spec: ParameterObject) {
       break;
     case 'number':
       coercedResult = data ? Number(data) : undefined;
-      validator.validateParamAfterCoercion('number', coercedResult);
+      if (coercedResult === undefined) break;
+      if (isNaN(coercedResult)) throw new HttpErrors['400']();
       break;
     case 'long':
       coercedResult = Number(data);
@@ -61,7 +63,6 @@ export function coerceParameter(data: string, spec: ParameterObject) {
     case 'password':
     // serialize will be supported in next PR
     case 'serialize':
-      break;
     default:
       break;
   }
