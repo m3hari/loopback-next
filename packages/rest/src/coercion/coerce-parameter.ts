@@ -27,8 +27,6 @@ export function coerceParameter(data: string, spec: ParameterObject) {
     );
     return data;
   }
-  let coercedResult;
-  coercedResult = data;
   const OAIType = getOAIPrimitiveType(schema.type, schema.format);
   const validator = new Validator({parameterSpec: spec});
 
@@ -36,38 +34,31 @@ export function coerceParameter(data: string, spec: ParameterObject) {
 
   switch (OAIType) {
     case 'byte':
-      coercedResult = Buffer.from(data, 'base64');
-      break;
+      return Buffer.from(data, 'base64');
     case 'date':
-      coercedResult = new Date(data);
-      break;
+      return new Date(data);
     case 'float':
     case 'double':
-      coercedResult = parseFloat(data);
-      break;
+      return parseFloat(data);
     case 'number':
-      coercedResult = data ? Number(data) : undefined;
-      if (coercedResult === undefined) break;
-      if (isNaN(coercedResult))
+      const coercedData = data ? Number(data) : undefined;
+      if (coercedData === undefined) return;
+      if (isNaN(coercedData))
         throw HttpErrorMessage.invalidData(data, spec.name);
-      break;
+      return coercedData;  
     case 'long':
-      coercedResult = Number(data);
-      break;
+      return Number(data);
     case 'integer':
-      coercedResult = parseInt(data);
-      break;
+      return parseInt(data);
     case 'boolean':
-      coercedResult = isTrue(data) ? true : isFalse(data) ? false : undefined;
-      break;
+      return isTrue(data) ? true : isFalse(data) ? false : undefined;
     case 'string':
     case 'password':
     // serialize will be supported in next PR
     case 'serialize':
     default:
-      break;
+      return data;
   }
-  return coercedResult;
 }
 
 /**
