@@ -17,7 +17,7 @@ describe('coerce param from string to buffer', () => {
     base64: Buffer.from('Hello World').toString('base64'),
   };
 
-  test<Buffer>(
+  test(
     BUFFER_PARAM,
     testValues.base64,
     Buffer.from(testValues.base64, 'base64'),

@@ -1,9 +1,11 @@
-// tslint:disable:no-any
+import * as HttpErrors from 'http-errors';
 export namespace HttpErrorMessage {
-  export const INVALID_DATA = (data: any, name: any) => {
-    return `Invalid data ${data} of parameter ${name}!`;
-  };
-  export const MISSING_REQUIRED = (name: any) => {
-    return `Required parameter ${name} is missing!`;
-  };
+  export function invalidData<T>(data: T, name: string) {
+    const msg = `Invalid data ${JSON.stringify(data)} for parameter ${name}!`;
+    return new HttpErrors.BadRequest(msg);
+  }
+  export function missingRequired(name: string): HttpErrors.HttpError {
+    const msg = `Required parameter ${name} is missing!`;
+    return new HttpErrors.BadRequest(msg);
+  }
 }

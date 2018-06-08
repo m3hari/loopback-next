@@ -4,7 +4,6 @@
 // License text available at https://opensource.org/licenses/MIT
 
 import {ParameterObject} from '@loopback/openapi-v3-types';
-import * as HttpErrors from 'http-errors';
 import {HttpErrorMessage} from '../';
 
 /**
@@ -43,7 +42,7 @@ export class Validator {
     if (this.isAbsent(value)) {
       if (this.isRequired(opts)) {
         const name = this.ctx.parameterSpec.name;
-        throw new HttpErrors['400'](HttpErrorMessage.MISSING_REQUIRED(name));
+        throw HttpErrorMessage.missingRequired(name);
       } else {
         return;
       }
@@ -68,6 +67,6 @@ export class Validator {
    */
   // tslint:disable-next-line:no-any
   isAbsent(value: any) {
-    return [''].includes(value);
+    return value === '';
   }
 }

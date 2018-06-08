@@ -13,5 +13,5 @@ const DATE_PARAM = {
 };
 
 describe('coerce param from string to date', () => {
-  test<Date>(DATE_PARAM, '2015-03-01', new Date('2015-03-01'));
+  test(DATE_PARAM, '2015-03-01', new Date('2015-03-01'));
 });

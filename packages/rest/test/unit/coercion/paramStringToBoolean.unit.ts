@@ -13,7 +13,7 @@ const BOOLEAN_PARAM = {
 };
 
 describe('coerce param from string to boolean', () => {
-  test<boolean>(BOOLEAN_PARAM, 'false', false);
-  test<boolean>(BOOLEAN_PARAM, 'true', true);
-  test<undefined>(BOOLEAN_PARAM, undefined, undefined);
+  test(BOOLEAN_PARAM, 'false', false);
+  test(BOOLEAN_PARAM, 'true', true);
+  test(BOOLEAN_PARAM, undefined, undefined);
 });

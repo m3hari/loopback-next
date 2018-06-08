@@ -19,6 +19,6 @@ const INT64_PARAM = {
 };
 
 describe('coerce param from string to integer', () => {
-  test<number>(INT32_PARAM, '100', 100);
-  test<number>(INT64_PARAM, '9223372036854775807', 9223372036854775807);
+  test(INT32_PARAM, '100', 100);
+  test(INT64_PARAM, '9223372036854775807', 9223372036854775807);
 });
