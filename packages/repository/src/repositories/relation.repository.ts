@@ -4,10 +4,14 @@
 // License text available at https://opensource.org/licenses/MIT
 
 import {EntityCrudRepository} from './repository';
-import {constrainDataObject, constrainFilter} from './constraint-utils';
-import {AnyObject, Options} from '../common-types';
+import {
+  constrainDataObject,
+  constrainFilter,
+  constrainWhere,
+} from './constraint-utils';
+import {DataObject, AnyObject, Options} from '../common-types';
 import {Entity} from '../model';
-import {Filter} from '../query';
+import {Filter, Where} from '../query';
 
 /**
  * CRUD operations for a target repository of a HasMany relation
@@ -26,7 +30,47 @@ export interface HasManyEntityCrudRepository<T extends Entity, ID> {
    * @param options Options for the operation
    * @returns A promise which resolves with the found target instance(s)
    */
-  find(filter?: Filter | undefined, options?: Options): Promise<T[]>;
+  find(filter?: Filter, options?: Options): Promise<T[]>;
+  /**
+   * 
+   * @param entity 
+   * @param options 
+   */
+  update(entity: DataObject<T>, options?: Options): Promise<boolean>;
+  /**
+   * 
+   * @param entity 
+   * @param options 
+   */
+  delete(entity: DataObject<T>, options?: Options): Promise<boolean>;
+  /**
+   * 
+   * @param entity 
+   * @param options 
+   */
+  save(entity: DataObject<T>, options?: Options): Promise<T | null>;
+  /**
+   * 
+   * @param dataObjects 
+   */
+  createAll(dataObjects: DataObject<T>[]): Promise<T[]>;
+  /**
+   * 
+   * @param where 
+   * @param options 
+   */
+  deleteAll(where?: Where, options?: Options): Promise<number>;
+  /**
+   * 
+   * @param dataObject 
+   * @param where 
+   * @param options 
+   */
+  updateAll(
+    dataObject: DataObject<T>,
+    where?: Where,
+    options?: Options,
+  ): Promise<number>;
 }
 
 export class DefaultHasManyEntityCrudRepository<
@@ -53,9 +97,44 @@ export class DefaultHasManyEntityCrudRepository<
     );
   }
 
-  async find(filter?: Filter | undefined, options?: Options): Promise<T[]> {
+  async find(filter?: Filter, options?: Options): Promise<T[]> {
     return await this.targetRepository.find(
       constrainFilter(filter, this.constraint),
+      options,
+    );
+  }
+
+  async update(entity: DataObject<T>, options?: Options): Promise<boolean> {
+    return await this.targetRepository.update(entity, options);
+  }
+
+  async delete(entity: DataObject<T>, options?: Options): Promise<boolean> {
+    return await this.targetRepository.delete(entity, options);
+  }
+
+  async save(entity: DataObject<T>, options?: Options): Promise<T | null> {
+    return await this.targetRepository.save(entity, options);
+  }
+
+  async createAll(dataObjects: DataObject<T>[]): Promise<T[]> {
+    return await this.targetRepository.createAll(dataObjects);
+  }
+
+  async deleteAll(where?: Where, options?: Options): Promise<number> {
+    return await this.targetRepository.deleteAll(
+      constrainWhere(where, this.constraint),
+      options,
+    );
+  }
+  
+  async updateAll(
+    dataObject: DataObject<T>,
+    where?: Where,
+    options?: Options,
+  ): Promise<number> {
+    return await this.targetRepository.updateAll(
+      dataObject,
+      constrainWhere(where, this.constraint),
       options,
     );
   }
