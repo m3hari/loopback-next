@@ -1,0 +1,19 @@
+import {model, property} from '@loopback/repository';
+
+/**
+ * The model class is generated from OpenAPI spec
+ */
+@model('<%- name %>')
+export class <%- className %> {
+  constructor() {}
+
+  <%_ for (const p of properties) { -%>
+  /**
+   * <%- p.description %>
+   */
+  <%- p.decoration %>
+  <%- p.signature %>;
+
+  <%_ } -%>
+}
+
