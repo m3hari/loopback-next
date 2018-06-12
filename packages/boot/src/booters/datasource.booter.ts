@@ -53,9 +53,8 @@ export class DataSourceBooter extends BaseArtifactBooter {
         );
       } else {
         this.classes.forEach(cls => {
-          const name = kebabCase(cls.name.replace('DataSource', ''));
           // tslint:disable-next-line:no-any
-          this.app.dataSource(cls as Class<juggler.DataSource>, name);
+          this.app.dataSource(cls as Class<juggler.DataSource>);
         });
       }
     }

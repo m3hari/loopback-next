@@ -29,7 +29,7 @@ describe('datasource booter unit tests', () => {
   it('gives a wanring if called on an app without RepositoryMixin', async () => {
     const normalApp = new Application();
     await sandbox.copyFile(
-      resolve(__dirname, '../../fixtures/multiple.artifact.js'),
+      resolve(__dirname, '../../fixtures/datasource.artifact.js'),
     );
 
     const booterInst = new DataSourceBooter(
@@ -37,7 +37,7 @@ describe('datasource booter unit tests', () => {
       SANDBOX_PATH,
     );
 
-    booterInst.discovered = [resolve(SANDBOX_PATH, 'multiple.artifact.js')];
+    booterInst.discovered = [resolve(SANDBOX_PATH, 'datasource.artifact.js')];
     await booterInst.load();
 
     sinon.assert.calledOnce(stub);
@@ -67,17 +67,14 @@ describe('datasource booter unit tests', () => {
   });
 
   it('binds datasources during the load phase', async () => {
-    const expected = [
-      `${DATASOURCES_PREFIX}.artifact-one`,
-      `${DATASOURCES_PREFIX}.artifact-two`,
-    ];
+    const expected = [`${DATASOURCES_PREFIX}.db`];
     await sandbox.copyFile(
-      resolve(__dirname, '../../fixtures/multiple.artifact.js'),
+      resolve(__dirname, '../../fixtures/datasource.artifact.js'),
     );
     const booterInst = new DataSourceBooter(app, SANDBOX_PATH);
-    const NUM_CLASSES = 2; // 2 classes in above file.
+    const NUM_CLASSES = 1; // 1 class in above file.
 
-    booterInst.discovered = [resolve(SANDBOX_PATH, 'multiple.artifact.js')];
+    booterInst.discovered = [resolve(SANDBOX_PATH, 'datasource.artifact.js')];
     await booterInst.load();
 
     const datasources = app.findByTag(DATASOURCES_TAG);

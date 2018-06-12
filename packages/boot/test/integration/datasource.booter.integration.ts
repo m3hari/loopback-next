@@ -20,10 +20,7 @@ describe('datasource booter integration tests', () => {
   beforeEach(getApp);
 
   it('boots datasources when app.boot() is called', async () => {
-    const expectedBindings = [
-      `${DATASOURCES_PREFIX}.artifact-one`,
-      `${DATASOURCES_PREFIX}.artifact-two`,
-    ];
+    const expectedBindings = [`${DATASOURCES_PREFIX}.db`];
 
     await app.boot();
 
@@ -34,8 +31,8 @@ describe('datasource booter integration tests', () => {
   async function getApp() {
     await sandbox.copyFile(resolve(__dirname, '../fixtures/application.js'));
     await sandbox.copyFile(
-      resolve(__dirname, '../fixtures/multiple.artifact.js'),
-      'datasources/multiple.datasource.js',
+      resolve(__dirname, '../fixtures/datasource.artifact.js'),
+      'datasources/db.datasource.js',
     );
 
     const MyApp = require(resolve(SANDBOX_PATH, 'application.js')).BooterApp;
