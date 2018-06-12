@@ -12,7 +12,6 @@ import {
   BootMixin,
   RepositoryBooter,
   DataSourceBooter,
-  DataSourceConfigBooter,
 } from '../../';
 
 describe('boot.component unit tests', () => {
@@ -46,13 +45,6 @@ describe('boot.component unit tests', () => {
       `${BootBindings.BOOTER_PREFIX}.DataSourceBooter`,
     );
     expect(booterInst).to.be.an.instanceOf(DataSourceBooter);
-  });
-
-  it('DataSourceConfigBooter is bound as a booter by default', async () => {
-    const booterInst = await app.get(
-      `${BootBindings.BOOTER_PREFIX}.DataSourceConfigBooter`,
-    );
-    expect(booterInst).to.be.an.instanceOf(DataSourceConfigBooter);
   });
 
   function getApp() {
