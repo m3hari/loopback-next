@@ -99,7 +99,7 @@ export function RepositoryMixin<T extends Class<any>>(superClass: T) {
      * ```
      */
     dataSource(dataSource: Class<juggler.DataSource>, name?: string) {
-      const dataSourceKey = `datasources.${name || dataSource.name}`;
+      const dataSourceKey = `datasources.${name || dataSource.dataSourceName}`;
       this.bind(dataSourceKey)
         .toClass(dataSource)
         .tag('datasource')

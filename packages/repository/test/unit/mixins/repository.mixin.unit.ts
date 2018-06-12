@@ -145,7 +145,7 @@ describe('RepositoryMixin dataSource', () => {
     const myApp = new AppWithRepoMixin();
 
     myApp.dataSource(FooDataSource);
-    expectDataSourceToBeBound(myApp, FooDataSource, 'FooDataSource');
+    expectDataSourceToBeBound(myApp, FooDataSource, 'foo');
   });
 
   it('binds dataSource to a binding key using the given name', () => {
@@ -168,6 +168,7 @@ describe('RepositoryMixin dataSource', () => {
   class AppWithRepoMixin extends RepositoryMixin(Application) {}
 
   class FooDataSource extends juggler.DataSource {
+    static dataSourceName = 'foo';
     constructor() {
       super({
         name: 'foo',
