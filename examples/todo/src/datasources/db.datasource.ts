@@ -5,9 +5,15 @@
 
 import {inject} from '@loopback/core';
 import {juggler, DataSource} from '@loopback/repository';
+const config = require('./db.datasource.json');
 
 export class DbDataSource extends juggler.DataSource {
-  constructor(@inject('datasources.config.db') dsConfig: DataSource) {
+  static dataSourceName = 'db';
+
+  constructor(
+    @inject('datasources.config.db', {optional: true})
+    dsConfig: DataSource = config,
+  ) {
     super(dsConfig);
   }
 }
