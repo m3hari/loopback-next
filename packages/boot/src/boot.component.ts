@@ -6,12 +6,7 @@
 import {Bootstrapper} from './bootstrapper';
 import {Component, Application, CoreBindings} from '@loopback/core';
 import {inject, BindingScope} from '@loopback/context';
-import {
-  ControllerBooter,
-  RepositoryBooter,
-  DataSourceBooter,
-  DataSourceConfigBooter,
-} from './booters';
+import {ControllerBooter, RepositoryBooter, DataSourceBooter} from './booters';
 import {BootBindings} from './keys';
 
 /**
@@ -22,12 +17,7 @@ import {BootBindings} from './keys';
 export class BootComponent implements Component {
   // Export a list of default booters in the component so they get bound
   // automatically when this component is mounted.
-  booters = [
-    ControllerBooter,
-    RepositoryBooter,
-    DataSourceBooter,
-    DataSourceConfigBooter,
-  ];
+  booters = [ControllerBooter, RepositoryBooter, DataSourceBooter];
 
   /**
    *

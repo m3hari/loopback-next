@@ -8,4 +8,3 @@ export * from './booter-utils';
 export * from './controller.booter';
 export * from './repository.booter';
 export * from './datasource.booter';
-export * from './datasource.config.booter';
