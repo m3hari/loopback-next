@@ -74,7 +74,7 @@ const expectedIndexFile = path.join(SANDBOX_PATH, 'src/datasources/index.ts');
 describe('datasource-generator extending BaseGenerator', baseTests);
 describe('generator-loopback4:datasource', tests);
 
-describe('lb4 datasource', () => {
+describe('lb4 datasource integration', () => {
   beforeEach('reset sandbox', () => sandbox.reset());
 
   it('does not run without package.json', () => {
@@ -163,16 +163,23 @@ function checkBasicDataSourceFiles() {
   assert.fileContent(expectedTSFile, /import {inject} from '@loopback\/core';/);
   assert.fileContent(
     expectedTSFile,
-    /import {juggler, DataSource} from '@loopback\/repository';/,
+    /import {juggler, DataSource, AnyObject} from '@loopback\/repository';/,
+  );
+  assert.fileContent(
+    expectedTSFile,
+    /const config = require\('.\/ds.datasource.json'\)/,
   );
   assert.fileContent(
     expectedTSFile,
     /export class DsDataSource extends juggler.DataSource {/,
   );
+  assert.fileContent(expectedTSFile, /static dataSourceName = 'ds';/);
+  assert.fileContent(expectedTSFile, /constructor\(/);
   assert.fileContent(
     expectedTSFile,
-    /constructor\(\@inject\('datasources.config.ds'\) dsConfig: DataSource\) \{/,
+    /\@inject\('datasources.config.ds', \{optional: true\}\)/,
   );
+  assert.fileContent(expectedTSFile, /\) \{/);
   assert.fileContent(expectedTSFile, /super\(dsConfig\);/);
 
   assert.fileContent(expectedIndexFile, /export \* from '.\/ds.datasource';/);

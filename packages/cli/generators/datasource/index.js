@@ -71,7 +71,23 @@ module.exports = class DataSourceGenerator extends ArtifactGenerator {
    * Ask for DataSource Name -- Must be unique
    */
   promptArtifactName() {
-    return super.promptArtifactName();
+    debug('Prompting for artifact name');
+    if (this.shouldExit()) return false;
+    const prompts = [
+      {
+        type: 'input',
+        name: 'name',
+        // capitalization
+        message: utils.toClassName(this.artifactInfo.type) + ' name:',
+        when: this.artifactInfo.name === undefined,
+        validate: utils.validateClassName,
+      },
+    ];
+
+    return this.prompt(prompts).then(props => {
+      Object.assign(this.artifactInfo, props);
+      return props;
+    });
   }
 
   /**
